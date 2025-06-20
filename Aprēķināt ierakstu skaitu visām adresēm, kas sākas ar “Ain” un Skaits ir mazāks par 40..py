@@ -1,6 +1,17 @@
+from openpyxl import load_workbook
 
-import pandas as pd
+wb = load_workbook('data.xlsx')
+ws = wb['Lapa_1']
+max_row = ws.max_row
 
-df = pd.read_excel("sagatave_eksamenam.xlsx", sheet_name="Lapa_0")
-q1 = df[df['Adrese'].str.startswith("Ain", na=False) & (df['Count'] < 40)]
-print("Q1 Result:", len(q1))
+count = 0
+
+for row in range(2, max_row + 1):
+    address = ws['D' + str(row)].value
+    quantity = ws['L' + str(row)].value 
+
+    if isinstance(address, str) and address.startswith("Ain"):
+        if isinstance(quantity, (int, float)) and quantity < 40:
+            count += 1
+
+print("Number of matching records:", count)
