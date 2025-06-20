@@ -1,7 +1,31 @@
+from openpyxl import load_workbook
+import math
 
-import pandas as pd
+wb = load_workbook('data.xlsx')
+ws = wb['Lapa_0']
+max_row = ws.max_row
 
-df = pd.read_excel("sagatave_eksamenam.xlsx", sheet_name="Lapa_0")
-df['Piegādes datums'] = pd.to_datetime(df['Piegādes datums'], errors='coerce')
-q2 = df[(df['Prioritāte'] == 'High') & (df['Piegādes datums'].dt.year == 2015)]
-print("Q2 Result:", len(q2))
+total_price = 0
+count = 0
+
+for row in range(2, max_row + 1):
+    product = ws['I' + str(row)].value  # Column I = Produkts
+    price = ws['K' + str(row)].value    # Column K = Cena
+
+    if isinstance(product, str) and 'LaserJet' in product:
+        # Try to convert price if it's a string with currency symbol
+        if isinstance(price, str):
+            price = price.replace('€', '').replace(',', '').strip()
+            try:
+                price = float(price)
+            except ValueError:
+                continue  # Skip if not a valid number
+        if isinstance(price, (int, float)):
+            total_price += price
+            count += 1
+
+if count > 0:
+    average = total_price / count
+    print(str(math.floor(average)))  # Round down and print as string
+else:
+    print("0")
