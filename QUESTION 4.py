@@ -1,8 +1,17 @@
+from openpyxl import load_workbook
 
-import pandas as pd
-import math
+wb = load_workbook('data.xlsx')
+ws = wb['Lapa_0']
+max_row = ws.max_row
 
-df = pd.read_excel("sagatave_eksamenam.xlsx", sheet_name="Lapa_0")
-q4_df = df[df['Produkts'].str.contains("LaserJet", na=False)]
-q4_avg = math.floor(q4_df['Cena'].mean())
-print("Q4 Result:", q4_avg)
+count = 0
+
+for row in range(2, max_row + 1):
+    address = ws['D' + str(row)].value  # Column D = Adrese
+    city = ws['E' + str(row)].value     # Column E = Pilsēta
+
+    if isinstance(address, str) and "Adulienas iela" in address:
+        if city in ["Valmiera", "Saulkrasti"]:
+            count += 1
+
+print("Matching entries count:", count)
